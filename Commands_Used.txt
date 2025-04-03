@@ -1,0 +1,322 @@
+------------------------------------------
+Hifiasm genome assembly
+------------------------------------------
+cd hifiasm
+./hifiasm --primary -o BDFB_k63mk20000.asm -k 63 --max-kocc 20000 -t 30 Blue_pacbio.fastq.gz
+
+*** Changed name and location of output files ***
+cd '/media/dean/2TB_Internal_Storage/RESULTS/Hifiasm_Assembly/BDFB_hifiPA/Official_Assembly_2023' 
+awk '/^S/{print ">"$2;print $3}' BDFB.asm.p_ctg.gfa > BDFB.p_ctg.fa
+awk '/^S/{print ">"$2;print $3}' BDFB.asm.a_ctg.gfa > BDFB.a_ctg.fa
+
+*** Submitted principal and alternate haplotypes to genbank PRJNA1076268 and after release, downloaded contigs for annotation. ***
+
+
+------------------------------------------
+Mapping reads to genome for SRA and maintaining methylation data
+------------------------------------------
+cat '/home/dean/GCA_047676095.1_BDFB_2.0_alternate_genomic.fna' '/home/dean/GCA_047676225.1_BDFB_2.0_principal_genomic.fna' > BDFB_2.0_genomic.fna
+conda activate methylation
+cd Methylation_PBMM2
+pbmm2 index BDFB_2.0_genomic.fasta BDFB_2.0_genomic.mmi --preset SUBREAD
+pbmm2 align BDFB_2.0_genomic.mmi Blue_pacbio.bam > BDFB_2.0_genomic_aln.bam
+samtools sort BDFB_2.0_genomic_aln.bam > BDFB_2.0_genomic_aln_sorted.bam
+samtools index BDFB_2.0_genomic_aln_sorted.bam
+samtools idxstats BDFB_2.0_genomic_aln_sorted.bam > idx.txt
+
+
+Quick view in IGV
+------------------------------------------
+cd '/home/dean/Downloads/IGV_Linux_2.16.1' 
+./igv.sh
+*** load genome and tracks ***
+*** Mapped reads were submitted to the SRA SUB15150713/SRR32558532 ***
+
+
+------------------------------------------
+MISA
+------------------------------------------
+cd misa
+perl misa.pl BDFB_principal.fasta
+
+
+------------------------------------------
+EDTA (requires very short contig names or it fails)
+------------------------------------------
+*** Contigs were renamed using a text editor to find and delete/replace text ***
+*** for example, in '>JBANDU010000001.1 Asbolus verrucosus isolate Pinal County Colony F3 Male ptg000001l, whole genome shotgun sequence' ***
+*** the 'JBAND', '010000', '.1 Asbolus verrucosus isolate Pinal County Colony F3 Male' , and ', whole genome shotgun sequence' were altered ***
+*** '>U001_001l' is an example of what remained ***
+cd
+conda activate EDTA
+cd EDTA
+perl EDTA.pl --threads 30 --genome BDFB_principal_renamed.fasta
+conda deactivate
+
+*** Contigs in output had to be renamed back to match original downloaded names at least up to the '>JBANDU010000001.1' part ***
+
+
+------------------------------------------
+MirMachine
+------------------------------------------
+cd
+conda activate mirna
+MirMachine.py -n Endopterygota -s BDFB --genome BDFB_principal.fasta -m proto --cpu 30
+conda deactivate
+
+
+------------------------------------------
+tRNAscan-se
+------------------------------------------
+conda activate trna
+tRNAscan-SE -j BDFB_principal_trna.gff BDFB_principal.fasta
+conda deactivate
+
+
+------------------------------------------
+Barrnap (check if activation needed)
+------------------------------------------
+barrnap --kingdom euk --threads 30 BDFB_principal.fasta > BDFB_principal_rDNA.gff
+
+
+------------------------------------------
+KMC and SRF
+------------------------------------------
+cd srf
+cd bin
+./kmc -fm -k151 -t16 -ci20 -cs100000 BDFB_principal.fasta count.kmc tmp_dir
+./kmc_dump count.kmc count.txt
+cd ..
+./srf -p BDFBp count.txt > srf.fa
+./srfutils.js enlong srf.fa > BDFB.principal_ctg_srf.enlong.fa
+minimap2 -c -N1000000 -f1000 -r100,100 -t16 BDFB.principal_ctg_srf.enlong.fa BDFB_principal.fasta > BDFB.principal_ctg_srf.paf
+./srfutils.js paf2bed BDFB.principal_ctg_srf.paf > BDFB.principal_ctg_srf.bed
+./srfutils.js bed2abun BDFB.principal_ctg_srf.bed > BDFB.principal_ctg_abun.txt
+
+*** The bed file works in IGV but needed conversion to .gff3 for annotation ***
+
+
+------------------------------------------
+Masking repetitive elements (if needed)
+------------------------------------------
+cd
+cd EDTA
+cut -f1,4,5 BDFB_principal_renamed.fasta.mod.EDTA.intact.gff3 > BDFB.principal_ctg_EDTA.bed
+cat BDFB_principal.fasta | tr acgt ACGT > BDFB_principal_Uppercase.fasta
+cut -f1,3,4 BDFB.principal_ctg_EDTA.bed > BDFB_principal_EDTA_use.bed
+bedtools maskfasta -soft -fi BDFB_principal_Uppercase.fasta -bed BDFB_principal_EDTA_use.bed -fo BDFB_principal_masked_EDTA.fasta
+bedtools maskfasta -soft -fi BDFB_principal_masked_EDTA.fasta -bed BDFB.principal_ctg_srf.bed -fo BDFB_principal_masked_EDTA_srf.fasta
+
+
+------------------------------------------
+Installing a new GeneMark key
+------------------------------------------
+cd
+cd Downloads
+gunzip gm_key.gz
+cp gm_key ~/.gm_key
+cd
+cd /home/dean/gmes_linux_64_4/
+./check_install.bash
+
+
+------------------------------------------
+Predicting proteins with Braker2 (RNAseq data not available)
+------------------------------------------
+*** The contigs from Genbank were already masked, so used them as is ***
+conda activate braker
+braker.pl --checksoftware
+cd
+braker.pl --genome=BDFB_principal.fasta --prot_seq=Arthropoda.fa --softmasking --cores 10 --workingdir=./CLR --GENEMARK_PATH=/home/dean/gmes_linux_64_4 --PROTHINT_PATH=/home/dean/ProtHint-2.6.0/bin
+cd
+cd CLR
+./gtf2gff.pl < augustus.hints.gtf --out=augustus.out.gff3 --gff3
+*** the perl script gtf2gff.pl is part of Augustus and is hidden inside Braker... copy it to wherever you want to use it ***
+
+
+------------------------------------------
+Diamond and RBH for 3 species
+------------------------------------------
+*** Reverse query and target for diamond searches ***
+*** Since RBH failed partially, Print lists of top matches ***
+*** Then look for the reciprocal best hit overlaps = homologs ***
+
+*** Tribolium castaneum ***
+conda activate RBH
+cd RBH
+perl getRBH.pl -q genomes/GCF_031307605.1_icTriCast1.1_protein.faa -t genomes/augustus.hints.aa
+perl getRBH.pl -t genomes/GCF_031307605.1_icTriCast1.1_protein.faa.gz -q genomes/augustus.hints.aa -s U
+cd compRuns
+cd augustus.hints.aa
+sort -u -k 1,1 < GCF_031307605.1_icTriCast1.1_protein.diamond > top1.txt
+cd ..
+cd Old_compRuns
+cd GCF_031307605.1_icTriCast1.1_protein
+sort -u -k 1,1 < augustus.hints.aa.diamond > top2.txt
+cd ..
+cd compRuns
+cd augustus.hints.aa
+awk '{print $1, $2}' top1.txt > top1_matches.txt
+awk '{print $2, $1}' top2.txt > top2_matches.txt
+grep -Fxf top1_matches.txt top2_matches.txt > homologs.txt
+awk 'FNR==NR{a[$0];next} {if($0 in a) print $0}' top1_matches.txt top2_matches.txt > homologs_awk.txt
+
+*** Tenebrio molitor with a little more efficiency ***
+*** began to use better names for directories for reciprocal runs of results for Diamond ***
+conda activate RBH
+cd RBH
+perl getRBH.pl -q genomes/GCF_963966145.1_icTenMoli1.1_protein.faa.gz -t genomes/augustus.hints.aa -s U
+perl getRBH.pl -t genomes/GCF_963966145.1_icTenMoli1.1_protein.faa.gz -q genomes/augustus.hints.aa -s U
+cd '/home/dean/RBH/TM_BDFB_compRuns1/GCF_963966145.1_icTenMoli1.1_protein' 
+sort -u -k 1,1 < GCF_963966145.1_icTenMoli1.1_protein.diamond > top1.txt
+sort -u -k 1,1 < augustus.hints.aa.diamond > top2.txt
+awk '{print $1, $2}' top1.txt > top1_matches.txt
+awk '{print $2, $1}' top2.txt > top2_matches.txt
+grep -Fxf top1_matches.txt top2_matches.txt > homologs_grep.txt
+awk 'FNR==NR{a[$0];next} {if($0 in a) print $0}' top1_matches.txt top2_matches.txt > homologs_awk.txt
+
+*** continue with Zophobas morio ***
+cd ..
+perl getRBH.pl -t genomes/GCF_036711695.1_CSIRO_AGI_Zmor_V1_protein.faa.gz -q genomes/augustus.hints.aa -s U
+perl getRBH.pl -q genomes/GCF_036711695.1_CSIRO_AGI_Zmor_V1_protein.faa.gz -t genomes/augustus.hints.aa -s U
+cd '/home/dean/RBH/ZM_BDFB_compRuns1/augustus.hints.aa' 
+sort -u -k 1,1 < GCF_036711695.1_CSIRO_AGI_Zmor_V1_protein.diamond > top1.txt
+sort -u -k 1,1 < augustus.hints.aa.diamond > top2.txt
+awk '{print $1, $2}' top1.txt > top1_matches.txt
+awk '{print $2, $1}' top2.txt > top2_matches.txt
+grep -Fxf top1_matches.txt top2_matches.txt > homologs_grep.txt
+awk 'FNR==NR{a[$0];next} {if($0 in a) print $0}' top1_matches.txt top2_matches.txt > homologs_awk.txt
+
+
+*** Combining and sorting it out ***
+cd RBH
+python GetHomologNamesTC.py
+python GetHomologNamesTM.py
+python GetHomologNamesZM.py
+
+cat Homolog* | sort k1,1 > HomologsX3.txt
+cat Homolog* | sort > HomologsX3.txt
+
+*** unknown manipulation here file change from HomologsX3.txt to HomologsX3tab.txt ***
+
+awk -F $'\t' '{print $1"\t"$4}' HomologsX3tab.txt > HomologNames.txt
+python GetCounts.py
+python LineKeeper.py
+grep -v "uncharacterized" output_file.txt > NonRedundantNames.txt
+awk '!seen[$1]++' NonRedundantNames.txt > UniqueNames.txt
+awk -F $'\t' '{print $1"\t"$2}' UniqueNames.txt > BestReciprocalHomologNames.txt
+
+
+------------------------------------------
+Kegg Blast KOALA 
+------------------------------------------
+*** BlastKoala can only handle 10,000 proetins ***
+split -n 4 augustus.hints.aa	# splits large file into 4 parts Xaa - Xad
+
+*** submit sets for analysis ***
+*** make sure to go to the 'view' link & make sure to download the data with the definitions present ***
+
+*** combine definition sets together ***
+cat *definition.txt > All_user_ko_definition.tsv
+
+*** remove [EC: num] and other junk ***
+python SplitKOdata.py
+
+*** make a dictionary of names ***
+awk -F'\t' '$4 != "" {print $1 "\t" $4}' All_user_ko_splitCols.txt > KO_names.txt
+
+
+------------------------------------------
+Cleaning up Braker proteins for Interproscan
+------------------------------------------
+perl -pe '$. > 1 and /^>/ ? print "\n" : chomp' augustus.hints.aa > Augustus.fasta		# makes two line fasta
+cat Augustus.fasta | tr -d '*' > BDFB2025.augustus.fasta					# removes stop '*'
+
+
+------------------------------------------
+Interproscan - protein domain analyses
+------------------------------------------
+cd my_interproscan
+cd interproscan-5.63-95.0
+./interproscan.sh -i BDFB2025.augustus.fasta -dp -cpu 30 -verbose
+
+
+------------------------------------------
+Name the proteins
+------------------------------------------
+*** Move the BestReciprocalHomologNames.txt, KO_names.txt, interpro .json output and scripts 1-4 to a directory called Names_on_Proteins ***
+*** Also move the Braker2 output augustus.fasta proteins and the augustus.gff3 to the same directory ***
+*** Run 4 scripts in order to create and compile protein names, then add them to the fasta and gff files ***
+cd
+cd Names_on_Proteins
+python 1_ipro_name_pipeline.py
+python 2_compile_namesets.py
+python 3_give_fasta_names.py
+python 4_give_gff3_names.py
+
+
+------------------------------------------
+Tidy up bed and gff3 files and combine
+------------------------------------------
+*** Move all GFF and bed files to a directory called GFF ***
+*** test individually with AGAT, modify as needed ***
+*** some AGAT functions do not work as advertised ***
+conda activate bedstuff
+cd GFF
+agat_convert_sp_gxf2gxf.pl -g BDFB_principal_srf.gff3
+python3 srf_bed_to_gff.py
+agat_convert_sp_gxf2gxf.pl -g BDFB_principal_srf.gff3 -o fixed_srf.gff3
+agat_convert_sp_gxf2gxf.pl -g misa.gff3 -o fixed_misa.gff3
+python3 fix_misa.py
+*** delete fixed_misa.gff3 ***
+agat_convert_sp_gxf2gxf.pl -g misa_alt.gff3 -o fixed_misa.gff3
+agat_convert_sp_gxf2gxf.pl -g EDTA.gff3 -o fixed_EDTA.gff3
+agat_convert_sp_gxf2gxf.pl -g rDNA.gff -o fixed_rDNA.gff3
+agat_convert_sp_gxf2gxf.pl -g trna.gff -o fixed_tRNA.gff3
+agat_convert_sp_gxf2gxf.pl -g mirmachine.gff -o fixed_mirmachine.gff3
+agat_convert_sp_gxf2gxf.pl -g augustus.col1fix.gff3 -o fixed_genes.gff3
+
+
+*** these manual changes were done to avoid duplicate agat-gene- entries when all sets are combined ***
+*** changes only took a few minutes, not requiring a novel script but just find and replace ***
+*** fixed_tRNA.gff3 result manually changed in text editor: ***
+agat-gene to tRNA-gene
+agat-pseudogene to tRNA-pseudogene
+\tAGAT\tgene\t to \ttRNAscan-se\tgene\t
+
+*** fixed_mirmachine.gff3 result manually changed in text editor: ***
+\tAGAT\tgene\t to \tMirMachine\tgene\t
+deleted all top lines except gff3 specification line	
+
+*** fixed_rDNA.gff3 result manually changed in text editor: ***
+\tAGAT\tgene\t to \tbarrnap\tgene\t
+agat-gene- to barrnap-gene-
+agat-rrna- to barrnap-rrna-
+
+
+agat_sp_merge_annotations.pl --gff fixed_EDTA.gff3 --gff fixed_misa.gff3 --gff fixed_SRF.gff3 --gff fixed_genes.gff3 --gff fixed_mirmachine.gff3 --gff fixed_rDNA.gff3 --gff fixed_trna.gff3 --out AGAT_merged.gff3
+
+*** AGAT_merged.gff3 was copied and renamed BDFB_principal.gff3 for use with table2asn ***
+
+------------------------------------------
+Quick view in IGV
+------------------------------------------
+cd '/home/dean/Downloads/IGV_Linux_2.16.1' 
+./igv.sh
+*** load genome and individual fixed tracks ***
+
+
+------------------------------------------
+Generate Initial Annotation table for NCBI
+------------------------------------------
+*** https://ftp.ncbi.nlm.nih.gov/asn1-converters/by_program/table2asn/DOCUMENTATION/table2asn_readme.txt ***
+./table2asn -M n -J -c w -euk -t template.sbt -i BDFB_principal.fasta -f BDFB_principal.gff3 -o BDFB_principal.sqn -Z
+
+*** Now the real work begins - dealing with all the discrepancy report and validation issues and fatal errors ***
+*** Major issues: IDs using gnl|dbname|locus_tag, plural, broken brackets, predicted instead of hypothetical, numbers in names, homolog, most of the transposon types not being recognized, misa naming of repeat IDs (retroactively mod the misa_fix.py script?) ***
+*** these will all be on a case-by-case basis, so no universal script to fix! ***
+*** repeat gff3 and table2asn mods and checks as needed ***
+*** When ready, add the locus_tags ***
+./table2asn -M n -J -c w -euk -t template.sbt -i BDFB_principal.fasta -f BDFB_principal.gff3 -o BDFB_principal.sqn -Z -locus-tag-prefix V5W00
+
+
