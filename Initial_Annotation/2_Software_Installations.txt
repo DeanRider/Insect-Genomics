@@ -1,0 +1,309 @@
+------------------------------------------
+Install and test Hifiasm:
+------------------------------------------
+git clone https://github.com/chhylp123/hifiasm
+cd hifiasm
+make
+wget https://github.com/chhylp123/hifiasm/releases/download/v0.7/chr11-2M.fa.gz
+./hifiasm -o test -t4 -f0 chr11-2M.fa.gz 2> test.log
+awk '/^S/{print ">"$2;print $3}' test.bp.p_ctg.gfa > test.p_ctg.fa
+head test.p_ctg.fa
+
+
+------------------------------------------
+Install samtools:
+------------------------------------------
+sudo apt install samtools
+
+
+------------------------------------------
+Install QT5:
+------------------------------------------
+sudo apt-get install qt5-default 
+or
+sudo apt-get install qt5
+
+
+------------------------------------------
+Download and install Bandage:
+------------------------------------------
+https://rrwick.github.io/Bandage/
+run from the bandage folder after QT5 is installed
+./Bandage 
+
+
+------------------------------------------
+Download and install (expand) MISA:
+------------------------------------------
+https://webblast.ipk-gatersleben.de/misa/
+download sourcecode link
+https://webblast.ipk-gatersleben.de/misa/misa_sourcecode_25082020.zip
+expand and move folder to home and rename
+
+
+------------------------------------------
+Download and install (expand) KMC:
+------------------------------------------
+https://github.com/refresh-bio/KMC
+
+
+------------------------------------------
+Install minimap2:
+------------------------------------------
+git clone https://github.com/lh3/minimap2
+cd minimap2 && make
+
+
+------------------------------------------
+Install SRF:
+------------------------------------------
+git clone https://github.com/lh3/srf
+cd srf && make
+
+
+------------------------------------------
+Download and Install Anaconda:
+------------------------------------------
+https://www.anaconda.com/docs/getting-started/anaconda/install#macos-linux-installation
+https://repo.anaconda.com/archive/
+Change the path_to_anaconda part and run the installer
+bash 'path_to_anaconda/Anaconda3-2023.03-1-Linux-x86_64.sh'
+conda remove -n ENV_NAME --all # will remove a conda environment
+
+
+------------------------------------------
+Make a conda environment called assembly:
+------------------------------------------
+conda create -n assembly
+conda activate assembly
+Make sure to activate 'assembly' before creating and installing other environments or set 'assembly' as base
+
+
+------------------------------------------
+Install pbmmm2:
+------------------------------------------
+conda create --name methylation
+conda activate methylation
+conda install -c bioconda pbmm2
+wget https://github.com/PacificBiosciences/pb-CpG-tools/releases/download/v2.3.1/pb-CpG-tools-v2.3.1-x86_64-unknown-linux-gnu.tar.gz
+tar -xzf pb-CpG-tools-v2.3.1-x86_64-unknown-linux-gnu.tar.gz
+pb-CpG-tools-v2.3.1-x86_64-unknown-linux-gnu/bin/aligned_bam_to_cpg_scores --help
+
+
+------------------------------------------
+Install Bedtools:
+------------------------------------------
+conda install -c bioconda bedtools
+
+
+------------------------------------------
+Install EDTA:
+------------------------------------------
+conda create -n EDTA
+conda activate EDTA
+mamba install -c conda-forge -c bioconda edta
+
+
+------------------------------------------
+Install Barrnap:
+------------------------------------------
+conda install -c bioconda -c conda-forge barrnap
+
+
+------------------------------------------
+Install pybarrnap:
+------------------------------------------
+cd
+conda create -n pybarrnap
+conda activate pybarrnap
+conda install -c conda-forge -c bioconda pybarrnap
+
+
+------------------------------------------
+Install tRNAScan-se:
+------------------------------------------
+conda create --name trna
+conda activate trna
+mamba install -c bioconda trnascan-se
+
+
+------------------------------------------
+Install MirMachine:
+------------------------------------------
+conda create --name mirna
+conda activate mirna
+mamba install mirmachine -c bioconda -c conda-forge
+
+
+------------------------------------------
+Install Braker 2.1.6 and test:
+------------------------------------------
+mamba create -n braker -c bioconda braker2
+braker.pl --checksoftware --GENEMARK_PATH=/home/dean/gmes_linux_64_4
+
+
+------------------------------------------
+Install and test GeneMark-ES:
+------------------------------------------
+sign up and download from https://genemark.bme.gatech.edu/
+tar -xvf gmes_linux_64_4.tar.gz
+cd gmes_linux_64_4
+perl change_path_in_perl_scripts.pl "/usr/bin/env perl"
+cd /home/dean/gmes_linux_64_4/
+./check_install.bash
+
+
+------------------------------------------
+Annually Install new key for GeneMark-ES:
+------------------------------------------
+sign up and download from https://genemark.bme.gatech.edu/
+gunzip gm_key.gz
+cp gm_key ~/.gm_key
+cd /home/dean/gmes_linux_64_4/
+./check_install.bash
+
+
+------------------------------------------
+Install RBH:
+------------------------------------------
+conda create --name RBH
+conda activate RBH
+https://github.com/Computational-conSequences/SequenceTools/blob/master/getRBH.pl
+Just save the perl script
+
+
+------------------------------------------
+Install and update Diamond:
+------------------------------------------
+conda activate RBH
+mamba install diamond
+mamba update diamond
+
+
+------------------------------------------
+Download Beetle Refseq Proteomes:
+------------------------------------------
+choose the protein.faa.gz
+https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Tribolium_castaneum/annotation_releases/GCF_031307605.1-RS_2024_04/
+GCF_031307605.1_icTriCast1.1_protein.faa.gz
+https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Tenebrio_molitor/annotation_releases/GCF_963966145.1-RS_2024_10/
+GCF_963966145.1_icTenMoli1.1_protein.faa.gz
+https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Zophobas_morio/annotation_releases/GCF_036711695.1-RS_2024_03/
+GCF_036711695.1_CSIRO_AGI_Zmor_V1_protein.faa.gz
+ 
+ 
+------------------------------------------
+Download and Install Interproscan:
+------------------------------------------
+https://github.com/ebi-pf-team/interproscan
+https://github.com/ebi-pf-team/interproscan/releases/tag/5.63-95.0
+get the .tar.gz file and extract
+Move the file to where you will use it.
+
+
+------------------------------------------
+Install AGAT and create a text manual:
+------------------------------------------
+conda activate bedstuff
+conda install -c bioconda agat
+agat -t > AGAT_manual.txt
+
+
+------------------------------------------
+Download and Install table2asn:
+------------------------------------------
+https://ftp.ncbi.nlm.nih.gov/asn1-converters/by_program/table2asn/
+linux64.table2asn.gz
+*** get the .gz file and extract ***
+*** Move the file to where you will use it ***
+*** Rename the file to table2asn ***
+chmod +x table2asn
+
+
+------------------------------------------
+Conda environments:
+------------------------------------------
+                         /home/dean/anaconda3
+base                  *  /home/dean/anaconda3/envs/assembly
+bedstuff                 /home/dean/anaconda3/envs/assembly/envs/bedstuff
+EDTA                     /home/dean/anaconda3/envs/assembly/envs/EDTA
+RBH                      /home/dean/anaconda3/envs/assembly/envs/RBH
+braker                   /home/dean/anaconda3/envs/assembly/envs/braker
+methylation              /home/dean/anaconda3/envs/assembly/envs/methylation
+mirna                    /home/dean/anaconda3/envs/assembly/envs/mirna
+pybarrnap                /home/dean/anaconda3/envs/assembly/envs/pybarrnap
+trna                     /home/dean/anaconda3/envs/assembly/envs/trna
+Try to keep different conda packages in their own environment to avoid conflicts
+bedtools and barrnap were (accidentally) not done this way!
+
+
+------------------------------------------
+Bespoke scripts for initial annotation (moved where needed):
+------------------------------------------
+GetHomologNamesTC.py
+GetHomologNamesTM.py
+GetHomologNamesZM.py
+GetCounts.py
+LineKeeper.py
+SplitKOdata.py
+1_ipro_name_pipeline.py
+2_compile_namesets.py
+3_give_fasta_names.py
+4_give_gff3_names.py
+srf_bed_to_gff.py
+fix_misa.py
+
+
+------------------------------------------
+Bespoke scripts for individual gff cleanup:
+------------------------------------------
+*** created after preliminary discrepancy reports ***
+fix_augustus.py
+fix_mirmachine.py
+fix_rRNA.py
+fix_tRNA.py
+fix_EDTA.py
+fix_misa.py
+fix_srf.py
+Gff_combiner.py
+
+
+------------------------------------------
+Bespoke scripts for global gff cleanup
+------------------------------------------
+*** created after discrepancy report from cleaned, combined gff ***
+first_fixes.py
+a_list_rDNA_conflicts.py
+c_kill_rDNA_genes.py
+b_list_rDNA_genes.py
+d_pseudo_tRNA.py
+
+
+------------------------------------------
+List of gff files before AGAT preliminary repair:
+------------------------------------------
+augustus.named.gff3                                      
+mirmachine.gff                                   
+misa.gff3
+BDFB.principal_ctg_srf.bed                         
+BDFB_principal_rDNA.gff                       
+BDFB_principal_renamed.fasta.mod.EDTA.intact.gff3  
+BDFB_principal_trna.gff
+
+*** New rRNA predictions ***
+BDFB_principal_pybarrnap.gff
+
+
+------------------------------------------
+Repaired gff files after individual cleanup:
+------------------------------------------
+fixed_mirmachine.gff3
+fixed_srf.gff3
+fixed_augustus.gff3
+fixed_misa.gff3
+fixed_tRNA.gff3
+fixed_EDTA.gff3
+fixed_rRNA_long.gff3
+
+*** Combined global gff ***
+BDFB_principal_1.gff3

@@ -1,0 +1,102 @@
+Discrepancy Report Results
+
+Summary
+COUNT_NUCLEOTIDES: 140 nucleotide Bioseqs are present
+FEATURE_COUNT: CDS: 30306 present
+FEATURE_COUNT: gene: 8 present
+FEATURE_COUNT: mRNA: 30306 present
+FEATURE_COUNT: misc_feature: 44 present
+FEATURE_COUNT: ncRNA: 77 present
+FEATURE_COUNT: rRNA: 341 present
+FEATURE_COUNT: repeat_region: 99756 present
+FEATURE_COUNT: tRNA: 442 present
+SUSPECT_PRODUCT_NAMES: 1081 product_names contain suspect phrases or characters
+	Putative Typo
+		3 features start with 'uncharacterized protein'
+		70 features May contain plural
+		5 features starts with 'gp'. May contain systematic gene product identifiers from phage
+		20 features are all capital letters
+	Suspicious phrase; should this be nonfunctional?
+		4 features contain 'Fragment'
+		1 feature contains 'interrupt'
+	May contain database identifier more appropriate in note; remove from product name
+		333 features contains three or more numbers together that may be identifiers more appropriate in note
+		9 features contain underscore
+	Possible parsing error or incorrect formatting; remove inappropriate symbols
+		FATAL: 26 features contain unbalanced brackets or parentheses
+		FATAL: 1 feature contain 'homeo'. Possible parsing error.  Has the product name been truncated?
+	Implies evolutionary relationship; change to -like protein
+		541 features contain 'Homolog'
+		2 features contain 'ortholog'
+	Product name does not contain letters
+		FATAL: 9 features do not contain letters in product name
+	Use short product name instead of descriptive phrase
+		69 features Is longer than 100 characters. Remove descriptive phrases or synonyms from product names. Keep valid long product names, eg long enzyme names
+		2 features end with 'activity'
+		3 features end with 'and related proteins'
+	use protein instead of gene as appropriate
+		17 features contain 'gene'
+		2 features contain 'genes'
+FATAL: INCONSISTENT_PROTEIN_ID: 2770 sequences have protein ID prefix JBANDU010000001.1
+FATAL: INCONSISTENT_PROTEIN_ID: 2176 sequences have protein ID prefix JBANDU010000002.1
+FATAL: INCONSISTENT_PROTEIN_ID: 295 sequences have protein ID prefix JBANDU010000003.1
+FATAL: INCONSISTENT_PROTEIN_ID: 2503 sequences have protein ID prefix JBANDU010000005.1
+FATAL: INCONSISTENT_PROTEIN_ID: 1751 sequences have protein ID prefix JBANDU010000006.1
+FATAL: INCONSISTENT_PROTEIN_ID: 1352 sequences have protein ID prefix JBANDU010000007.1
+FATAL: INCONSISTENT_PROTEIN_ID: 1760 sequences have protein ID prefix JBANDU010000008.1
+FATAL: INCONSISTENT_PROTEIN_ID: 2295 sequences have protein ID prefix JBANDU010000009.1
+FATAL: INCONSISTENT_PROTEIN_ID: 2262 sequences have protein ID prefix JBANDU010000010.1
+FATAL: INCONSISTENT_PROTEIN_ID: 1719 sequences have protein ID prefix JBANDU010000011.1
+FATAL: INCONSISTENT_PROTEIN_ID: 4062 sequences have protein ID prefix JBANDU010000012.1
+FATAL: INCONSISTENT_PROTEIN_ID: 733 sequences have protein ID prefix JBANDU010000013.1
+FATAL: INCONSISTENT_PROTEIN_ID: 142 sequences have protein ID prefix JBANDU010000014.1
+FATAL: INCONSISTENT_PROTEIN_ID: 513 sequences have protein ID prefix JBANDU010000015.1
+FATAL: INCONSISTENT_PROTEIN_ID: 2944 sequences have protein ID prefix JBANDU010000016.1
+FATAL: INCONSISTENT_PROTEIN_ID: 209 sequences have protein ID prefix JBANDU010000017.1
+FATAL: INCONSISTENT_PROTEIN_ID: 8 sequences have protein ID prefix JBANDU010000018.1
+FATAL: INCONSISTENT_PROTEIN_ID: 468 sequences have protein ID prefix JBANDU010000019.1
+FATAL: INCONSISTENT_PROTEIN_ID: 158 sequences have protein ID prefix JBANDU010000020.1
+FATAL: INCONSISTENT_PROTEIN_ID: 803 sequences have protein ID prefix JBANDU010000021.1
+FATAL: INCONSISTENT_PROTEIN_ID: 29 sequences have protein ID prefix JBANDU010000023.1
+FATAL: INCONSISTENT_PROTEIN_ID: 181 sequences have protein ID prefix JBANDU010000025.1
+FATAL: INCONSISTENT_PROTEIN_ID: 55 sequences have protein ID prefix JBANDU010000027.1
+FATAL: INCONSISTENT_PROTEIN_ID: 170 sequences have protein ID prefix JBANDU010000040.1
+FATAL: INCONSISTENT_PROTEIN_ID: 138 sequences have protein ID prefix JBANDU010000047.1
+FATAL: INCONSISTENT_PROTEIN_ID: 1 sequence has protein ID prefix JBANDU010000048.1
+FATAL: INCONSISTENT_PROTEIN_ID: 1 sequence has protein ID prefix JBANDU010000050.1
+FATAL: INCONSISTENT_PROTEIN_ID: 1 sequence has protein ID prefix JBANDU010000052.1
+FATAL: INCONSISTENT_PROTEIN_ID: 62 sequences have protein ID prefix JBANDU010000053.1
+FATAL: INCONSISTENT_PROTEIN_ID: 4 sequences have protein ID prefix JBANDU010000054.1
+FATAL: INCONSISTENT_PROTEIN_ID: 1 sequence has protein ID prefix JBANDU010000065.1
+FATAL: INCONSISTENT_PROTEIN_ID: 3 sequences have protein ID prefix JBANDU010000067.1
+FATAL: INCONSISTENT_PROTEIN_ID: 5 sequences have protein ID prefix JBANDU010000069.1
+FATAL: INCONSISTENT_PROTEIN_ID: 4 sequences have protein ID prefix JBANDU010000070.1
+FATAL: INCONSISTENT_PROTEIN_ID: 304 sequences have protein ID prefix JBANDU010000071.1
+FATAL: INCONSISTENT_PROTEIN_ID: 5 sequences have protein ID prefix JBANDU010000073.1
+FATAL: INCONSISTENT_PROTEIN_ID: 17 sequences have protein ID prefix JBANDU010000077.1
+FATAL: INCONSISTENT_PROTEIN_ID: 1 sequence has protein ID prefix JBANDU010000080.1
+FATAL: INCONSISTENT_PROTEIN_ID: 287 sequences have protein ID prefix JBANDU010000083.1
+FATAL: INCONSISTENT_PROTEIN_ID: 9 sequences have protein ID prefix JBANDU010000095.1
+FATAL: INCONSISTENT_PROTEIN_ID: 13 sequences have protein ID prefix JBANDU010000108.1
+FATAL: INCONSISTENT_PROTEIN_ID: 15 sequences have protein ID prefix JBANDU010000112.1
+FATAL: INCONSISTENT_PROTEIN_ID: 1 sequence has protein ID prefix JBANDU010000127.1
+FATAL: INCONSISTENT_PROTEIN_ID: 17 sequences have protein ID prefix JBANDU010000131.1
+FATAL: INCONSISTENT_PROTEIN_ID: 18 sequences have protein ID prefix JBANDU010000135.1
+FATAL: INCONSISTENT_PROTEIN_ID: 19 sequences have protein ID prefix JBANDU010000136.1
+FATAL: INCONSISTENT_PROTEIN_ID: 18 sequences have protein ID prefix JBANDU010000138.1
+FATAL: INCONSISTENT_PROTEIN_ID: 2 sequences have protein ID prefix JBANDU010000139.1
+FATAL: INCONSISTENT_PROTEIN_ID: 2 sequences have protein ID prefix JBANDU010000140.1
+FATAL: MISSING_GENES: 61472 features have no genes
+EXTRA_GENES: 8 gene features are not associated with a CDS or RNA feature.
+MISC_FEATURE_WITH_PRODUCT_QUAL: 44 features have a product qualifier
+FATAL: CONTAINED_CDS: 2777 coding regions are completely contained in another coding region.
+FATAL: RNA_CDS_OVERLAP: 522 coding regions overlap RNA features
+CDS_TRNA_OVERLAP: 3 Bioseqs have coding regions that overlap tRNAs
+FATAL: OVERLAPPING_RRNAS: 106 rRNA features overlap another rRNA feature.
+FATAL: BACTERIAL_JOINED_FEATURES_NO_EXCEPTION: 22546 coding regions with joined locations have no exceptions
+RNA_NO_PRODUCT: 519 RNA features have no product and are not pseudo
+FATAL: RRNA_NAME_CONFLICTS: 44 rRNA product names are not standard. Correct the names to the standard format, eg "16S ribosomal RNA"
+SUSPECT_RRNA_PRODUCTS: 44 rRNA product names contain suspect phrase
+FIND_BADLEN_TRNAS: 5 tRNAs are too long - over 150 nucleotides
+FEATURE_LIST: Feature List
+FATAL: NO_LOCUS_TAGS: None of 8 genes has locus tag.

@@ -1,0 +1,12 @@
+------------------------------------------
+Discrepancy report issues remaining (followed by manually inserted comment):
+------------------------------------------
+SUSPECT_PRODUCT_NAMES: 334 product_names contain suspect phrases or characters | ALL OF THE NAMES HAVE BEEN REVIEWED AND LOOK FINE
+FATAL: CONTAINED_CDS: 2749 coding regions are completely contained in another coding region. | THESE ARE DUE TO ALTERNATIVE TRANSCRIPT SPLICING PREDICTIONS
+FATAL: RNA_CDS_OVERLAP: 11 coding regions overlap RNA features | Hypothetical protein overlapping tRNA - PROBABLY FINE / FAVOR THE TRNA
+CDS_TRNA_OVERLAP: 3 Bioseqs have coding regions that overlap tRNAs | Hypothetical protein overlapping tRNA - PROBABLY FINE / FAVOR THE TRNA
+FEATURE_LOCATION_CONFLICT: 2600 features have inconsistent gene locations. | NOT SURE HOW THIS GETS FIXED
+FATAL: BACTERIAL_JOINED_FEATURES_NO_EXCEPTION: 22179 coding regions with joined locations have no exceptions | IT IS AN EUKARYOTE
+JOINED_FEATURES: 44358 features have joined locations. | IT IS AN EUKARYOTE
+FIND_BADLEN_TRNAS: 5 tRNAs are too long - over 150 nucleotides | EACH OF THESE HAS AN INTRON AND TWO EXONS AND LOOKS FINE
+

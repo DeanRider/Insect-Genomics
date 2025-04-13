@@ -1,0 +1,59 @@
+------------------------------------------
+Run pybarrnap:
+------------------------------------------
+*** Use pybarrnap because Barrnap produced challenging overlapping rRNA models ***
+conda activate pybarrnap
+pybarrnap -h
+pybarrnap -k euk -t 20 BDFB_principal.fasta > BDFB_principal_pybarrnap.gff
+conda deactivate
+
+
+
+------------------------------------------
+Reformat and fix all datasets:
+------------------------------------------ 
+*** place all gff or bed output files in a directory called GFF and run scripts to reformat and fix all datasets ***
+cd GFF
+python3 fix_misa.py
+python3 fix_augustus.py
+python3 fix_EDTA.py
+python3 fix_rRNA.py
+python3 fix_mirmachine.py
+python3 fix_tRNA.py
+python3 fix_srf.py
+
+*** place all fixed_process_gff3 output files in a directory called Fixed_gff ***
+cd Fixed_gff
+python3 Gff_combiner.py
+
+
+
+------------------------------------------
+Run table2asn and modify global gff3:
+------------------------------------------ 
+*** place the template.sbt, BDFB_principal.fasta and BDFB_principal_1.gff3 in the directory for table2asn ***
+*** initial test of combined gff3 ***
+cd /home/dean/NCBI_Annotation
+./table2asn -M n -J -c x -euk -t template.sbt -j "[organism=Asbolus verrucosus]" -i BDFB_principal.fasta -f BDFB_principal_1.gff3 -o BDFB_principal_1.sqn -Z -locus-tag-prefix V5W00
+
+*** Mostly repair odd phrases and gene names that are non-conforming ***
+python3 first_fixes.py
+./table2asn -M n -J -c x -euk -t template.sbt -j "[organism=Asbolus verrucosus]" -i BDFB_principal.fasta -f BDFB_principal_2.gff3 -o BDFB_principal_2.sqn -Z -locus-tag-prefix V5W00
+
+*** Handle overlapping hypothetical protein predictions that superimpose onto the rRNA genes ***
+egrep ':rRNA' -A1 BDFB_principal_2.dr > rDNA_conflict_regions.txt
+grep 'CDS' rDNA_conflict_regions.txt > rDNA_CDS_conflicts.txt
+python3 a_list_rDNA_conflicts.py
+python3 b_list_rDNA_genes.py
+
+*** manually add g10872 to genes_to_kill.txt list, this is an incomplete predicted protein within telomere-like repeats GPGPGQVRSRARSGQVPGQVRS ***
+python3 c_kill_rDNA_genes.py
+
+*** run another test and include genetic code ***
+./table2asn -M n -J -c x -euk -t template.sbt -j "[organism=Asbolus verrucosus][gcode=1]" -i BDFB_principal.fasta -f BDFB_principal_3.gff3 -o BDFB_principal_3.sqn -Z -locus-tag-prefix V5W00
+
+*** label one tRNA with unknown anticodon as a pseudogene ***
+python3 d_pseudo_tRNA.py
+
+*** run another test ***
+./table2asn -M n -J -c x -euk -t template.sbt -j "[organism=Asbolus verrucosus][gcode=1]" -i BDFB_principal.fasta -f BDFB_principal_4.gff3 -o BDFB_principal_4.sqn -Z -locus-tag-prefix V5W00
