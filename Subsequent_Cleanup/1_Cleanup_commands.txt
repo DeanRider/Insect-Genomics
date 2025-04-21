@@ -41,8 +41,6 @@ python3 first_fixes.py
 ./table2asn -M n -J -c x -euk -t template.sbt -j "[organism=Asbolus verrucosus]" -i BDFB_principal.fasta -f BDFB_principal_2.gff3 -o BDFB_principal_2.sqn -Z -locus-tag-prefix V5W00
 
 *** Handle overlapping hypothetical protein predictions that superimpose onto the rRNA genes ***
-egrep ':rRNA' -A1 BDFB_principal_2.dr > rDNA_conflict_regions.txt
-grep 'CDS' rDNA_conflict_regions.txt > rDNA_CDS_conflicts.txt
 python3 a_list_rDNA_conflicts.py
 python3 b_list_rDNA_genes.py
 
