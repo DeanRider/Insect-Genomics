@@ -292,7 +292,8 @@ def replace_strings(input_file, output_file):
             modified_line = modified_line.replace("dynamin-like 120 kDa protein, mitochondrial isoform X1","dynamin-like protein, mitochondrial isoform X1")
             modified_line = modified_line.replace("V-type ATPase, V0 complex, 116kDa subunit family protein","V-type ATPase subunit, V0 complex family protein")
             modified_line = modified_line.replace("centrosomal protein of 162 kDa isoform X1","centrosomal protein isoform X1")
-                        
+            modified_line = modified_line.replace(" superfamily / ","/")
+            modified_line = modified_line.replace(" domain-containing / ","/")
             # Append the modified line to updated_lines
             updated_lines.append(modified_line + "\n")
 

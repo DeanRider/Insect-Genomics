@@ -21,6 +21,34 @@ JBANDU010000010.1	23468658	23468056
 
 import re
 
+# Read the file
+with open('BDFB_principal_2.dr', 'r') as infile:
+    lines = infile.readlines()
+
+# Extract lines matching ':rRNA' and the line after each match
+conflict_regions = []
+i = 0
+while i < len(lines):
+    if ':rRNA' in lines[i]:
+        conflict_regions.append(lines[i])
+        if i + 1 < len(lines):
+            conflict_regions.append(lines[i + 1])
+        i += 2  # Skip the next line since we already included it
+    else:
+        i += 1
+
+# Save to rDNA_conflict_regions.txt
+with open('rDNA_conflict_regions.txt', 'w') as outfile:
+    outfile.writelines(conflict_regions)
+
+# Now extract lines containing 'CDS' from that file
+cds_conflicts = [line for line in conflict_regions if 'CDS' in line]
+
+# Save to rDNA_CDS_conflicts.txt
+with open('rDNA_CDS_conflicts.txt', 'w') as outfile:
+    outfile.writelines(cds_conflicts)
+
+
 # Function to process the content
 def process_line(line):
     # Split the line by tab characters
